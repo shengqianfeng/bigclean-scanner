@@ -7,39 +7,39 @@
     <icon dark="true">icons/pluginIcon_dark.svg</icon>
 
     <description><![CDATA[
-    <h2>BigClean Scanner - 代码清理分析工具</h2>
+    <h2>BigClean Scanner - Code Cleanup Analysis Tool</h2>
     
-    <p>一个强大的 IntelliJ IDEA 插件，用于分析项目中的无用代码，帮助开发者清理和维护代码库。</p>
+    <p>A powerful IntelliJ IDEA plugin for analyzing unused code in your projects, helping developers clean and maintain their codebase. This tool provides comprehensive analysis capabilities to identify and remove dead code, improving code quality and maintainability.</p>
     
-    <h3>主要功能：</h3>
+    <h3>Key Features:</h3>
     <ul>
-        <li><b>无用类分析</b> - 使用两种不同的分析方法识别未使用的类</li>
-        <li><b>正则表达式分析</b> - 快速扫描，适合初步分析</li>
-        <li><b>Spoon AST分析</b> - 精确的语法分析，提供更准确的结果</li>
-        <li><b>无用方法分析</b> - 识别项目中未被调用的方法</li>
-        <li><b>独立刷新</b> - 每个分析模块都可以独立刷新</li>
-        <li><b>Spring框架支持</b> - 专门针对Spring项目的优化分析</li>
+        <li><b>Unused Class Analysis</b> - Uses two different analysis methods to identify unused classes</li>
+        <li><b>Regex Analysis</b> - Fast scanning, suitable for preliminary analysis</li>
+        <li><b>Spoon AST Analysis</b> - Precise syntax analysis providing more accurate results</li>
+        <li><b>Unused Method Analysis</b> - Identifies methods that are not called in the project</li>
+        <li><b>Independent Refresh</b> - Each analysis module can be refreshed independently</li>
+        <li><b>Spring Framework Support</b> - Optimized analysis specifically for Spring projects</li>
     </ul>
     
-    <h3>使用方法：</h3>
+    <h3>How to Use:</h3>
     <ol>
-        <li>在右侧工具窗口找到 "BigClean Scanner"</li>
-        <li>选择要分析的项目</li>
-        <li>点击相应的刷新按钮开始分析</li>
-        <li>查看分析结果并清理无用代码</li>
+        <li>Find "BigClean Scanner" in the right tool window</li>
+        <li>Select the project to analyze</li>
+        <li>Click the corresponding refresh button to start analysis</li>
+        <li>Review analysis results and clean up unused code</li>
     </ol>
     
-    <h3>支持的分析类型：</h3>
+    <h3>Supported Analysis Types:</h3>
     <ul>
         <li>Spring @Component, @Service, @Repository, @Controller</li>
-        <li>AspectJ @Aspect 注解</li>
-        <li>MapStruct @Mapper 注解</li>
-        <li>Lombok 注解类</li>
-        <li>JUnit 测试类</li>
-        <li>配置属性类</li>
+        <li>AspectJ @Aspect annotations</li>
+        <li>MapStruct @Mapper annotations</li>
+        <li>Lombok annotation classes</li>
+        <li>JUnit test classes</li>
+        <li>Configuration property classes</li>
     </ul>
     
-    <p><em>注意：分析结果仅供参考，请在实际删除代码前仔细确认。</em></p>
+    <p><em>Note: Analysis results are for reference only. Please verify carefully before actually deleting code.</em></p>
     ]]></description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html

@@ -84,7 +84,7 @@ buildSearchableOptions {
 
 patchPluginXml {
     sinceBuild = '201'  // 对应2020.1，支持你的IDEA版本
-    untilBuild = '255.*' // Support up to 2025.3
+    // untilBuild 不设置，支持所有未来版本
     changeNotes """
       <h3>版本 1.0.0 - 初始发布</h3>
       <ul>
