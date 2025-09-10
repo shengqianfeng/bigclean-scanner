@@ -1,0 +1,122 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.7.3'
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+apply plugin: 'org.jetbrains.intellij'
+
+group 'com.hello.bigclean'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    
+    // Spoon Core for Java AST analysis
+    implementation('fr.inria.gforge.spoon:spoon-core:9.1.0') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+        exclude group: 'ch.qos.logback', module: 'logback-classic'
+        exclude group: 'ch.qos.logback', module: 'logback-core'
+    }
+    
+    // Spoon dependencies
+    implementation('com.google.guava:guava:30.1-jre') {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'commons-io:commons-io:2.11.0'
+    
+    // SLF4J API (使用IntelliJ提供的版本)
+    compileOnly 'org.slf4j:slf4j-api:1.7.30'
+    
+    // Spring Framework dependencies
+    implementation 'org.springframework:spring-web:5.2.5.RELEASE'
+    implementation 'org.springframework:spring-context:5.2.5.RELEASE'
+    
+    // Spring Boot Configuration Properties
+    implementation 'org.springframework.boot:spring-boot:2.2.6.RELEASE'
+    
+    // AspectJ Weaver for AOP support
+    implementation 'org.aspectj:aspectjweaver:1.9.5'
+    
+    // MapStruct for object mapping
+    implementation 'org.mapstruct:mapstruct-jdk8:1.2.0.Final'
+    
+    // Hutool utility library
+    implementation 'cn.hutool:hutool-all:5.7.16'
+    
+    // Lombok for reducing boilerplate code
+    compileOnly 'org.projectlombok:lombok:1.18.38'
+    annotationProcessor 'org.projectlombok:lombok:1.18.38'
+}
+
+// 简化的插件构建配置
+intellij {
+    // 使用一个轻量级的配置
+    version = '2020.1.1'  // 使用较老的稳定版本，文件更小
+    type = 'IC'
+    plugins = ['java']
+    downloadSources = false
+    instrumentCode = false
+    updateSinceUntilBuild = false
+}
+
+// 禁用搜索选项构建，避免类路径问题
+buildSearchableOptions {
+    enabled = false
+}
+
+// 使用标准的buildPlugin任务
+// 删除自定义的buildPluginZip任务
+
+patchPluginXml {
+    sinceBuild = '201'  // 对应2020.1，支持你的IDEA版本
+    untilBuild = '255.*' // Support up to 2025.3
+    changeNotes """
+      <h3>版本 1.0.0 - 初始发布</h3>
+      <ul>
+        <li>🎉 首次发布 BigClean Scanner 插件</li>
+        <li>🔍 支持无用类分析（正则表达式 + Spoon AST）</li>
+        <li>🔍 支持无用方法分析</li>
+        <li>🔄 独立刷新功能，每个分析模块可单独刷新</li>
+        <li>☕ 支持 Spring 框架相关注解分析</li>
+        <li>📦 支持 AspectJ、MapStruct、Lombok 等框架</li>
+        <li>⚡ 优化的性能和用户体验</li>
+      </ul>
+      
+      <h4>使用方法：</h4>
+      <ol>
+        <li>在右侧工具窗口找到 "BigClean Scanner"</li>
+        <li>选择要分析的项目</li>
+        <li>点击相应的刷新按钮开始分析</li>
+        <li>查看分析结果并清理无用代码</li>
+      </ol>
+      
+      <p><em>注意：分析结果仅供参考，请在实际删除代码前仔细确认。</em></p>
+      """
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+// Configure JVM version for Gradle
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    }
+}
