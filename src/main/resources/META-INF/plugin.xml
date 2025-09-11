@@ -4,8 +4,8 @@
     <vendor>Hello Sheng</vendor>
     <version>1.0.0</version>
     
-    <!-- Proprietary License Declaration -->
-    <license>Proprietary</license>
+    <!-- EULA License Declaration -->
+    <license url="https://www.termsfeed.com/live/cd3b772c-7c3e-4a3e-a578-1d927c4f5fc9">End User License Agreement</license>
     <icon>icons/pluginIcon.svg</icon>
     <icon dark="true">icons/pluginIcon_dark.svg</icon>
 
@@ -45,7 +45,7 @@
     <p><em>Note: Analysis results are for reference only. Please verify carefully before actually deleting code.</em></p>
     
     <h3>License:</h3>
-    <p>This plugin is proprietary software. All rights reserved. Redistribution and use in source and binary forms, with or without modification, are not permitted without explicit written permission from the author.</p>
+    <p>This plugin is proprietary software governed by an End User License Agreement (EULA). By using this plugin, you agree to the terms and conditions specified in the EULA. Please review the complete license terms before installation.</p>
     ]]></description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
