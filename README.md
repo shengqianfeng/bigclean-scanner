@@ -40,15 +40,8 @@
 
 ### 方法二：从源码构建
 ```bash
-# 克隆项目
-git clone https://github.com/your-repo/bigclean-scanner.git
-cd bigclean-scanner
-
-# 构建插件
-./gradlew buildPlugin
-
-# 插件包位置
-build/distributions/bigclean-scanner-1.0.0.zip
+# 注意：源代码不公开提供
+# 如需源码访问权限，请联系作者
 ```
 
 ## 🛠️ 使用方法
@@ -127,11 +120,11 @@ A: 请确保 IntelliJ IDEA 版本兼容（2023.1+），并检查插件包是否�
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证，详见 [LICENSE](LICENSE) 文件。
+本插件为专有软件，版权所有。未经作者明确书面许可，不得以任何形式重新分发或使用源代码。
 
-## 🤝 贡献
+## 🤝 支持与反馈
 
-欢迎提交 Issue 和 Pull Request！
+如有问题或建议，请通过邮件联系作者。
 
 ## 📞 联系方式
 

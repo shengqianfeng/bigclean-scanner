@@ -3,6 +3,9 @@
     <name>BigClean Scanner</name>
     <vendor>Hello Sheng</vendor>
     <version>1.0.0</version>
+    
+    <!-- Proprietary License Declaration -->
+    <license>Proprietary</license>
     <icon>icons/pluginIcon.svg</icon>
     <icon dark="true">icons/pluginIcon_dark.svg</icon>
 
@@ -40,6 +43,9 @@
     </ul>
     
     <p><em>Note: Analysis results are for reference only. Please verify carefully before actually deleting code.</em></p>
+    
+    <h3>License:</h3>
+    <p>This plugin is proprietary software. All rights reserved. Redistribution and use in source and binary forms, with or without modification, are not permitted without explicit written permission from the author.</p>
     ]]></description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
