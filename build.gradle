@@ -15,7 +15,7 @@ plugins {
 apply plugin: 'org.jetbrains.intellij'
 
 group 'com.hello.bigclean'
-version '1.0.0'
+version '1.0.1'
 
 repositories {
     mavenCentral()
@@ -86,7 +86,7 @@ patchPluginXml {
     sinceBuild = '201'  // 对应2020.1，支持你的IDEA版本
     // untilBuild 不设置，支持所有未来版本
     changeNotes """
-      <h3>版本 1.0.0 - 初始发布</h3>
+      <h3>版本 1.0.1 发布</h3>
       <ul>
         <li>🎉 首次发布 BigClean Scanner 插件</li>
         <li>🔍 支持无用类分析（正则表达式 + Spoon AST）</li>

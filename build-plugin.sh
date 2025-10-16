@@ -2,7 +2,7 @@
 
 # BigClean Scanner Plugin 构建脚本
 # 作者: Hello Sheng
-# 版本: 1.0.0
+# 版本: 1.0.1
 # 专门使用 JDK 1.8 构建
 
 set -e
@@ -39,7 +39,7 @@ echo "跳过清理步骤（避免文件占用问题）..."
 # 显示构建信息
 echo "显示构建信息..."
 echo "=== BigClean Scanner Plugin Build Info ==="
-echo "Version: 1.0.0"
+echo "Version: 1.0.1"
 echo "Group: com.hello.bigclean"
 echo "Java Version: 1.8"
 echo "Build Directory: build"
@@ -52,30 +52,30 @@ source ~/.bash_profile
 ./gradlew buildPlugin
 
 # 检查构建结果
-if [ -f "build/distributions/bigclean-scanner-1.0.0.zip" ]; then
+if [ -f "build/distributions/bigclean-scanner-1.0.1.zip" ]; then
     echo "✓ 插件构建成功!"
-    echo "插件包位置: build/distributions/bigclean-scanner-1.0.0.zip"
+    echo "插件包位置: build/distributions/bigclean-scanner-1.0.1.zip"
     
     # 显示文件信息
-    file_size=$(du -h "build/distributions/bigclean-scanner-1.0.0.zip" | cut -f1)
+    file_size=$(du -h "build/distributions/bigclean-scanner-1.0.1.zip" | cut -f1)
     echo "插件包大小: $file_size"
     
     # 创建发布目录
     mkdir -p release
-    cp "build/distributions/bigclean-scanner-1.0.0.zip" "release/"
+    cp "build/distributions/bigclean-scanner-1.0.1.zip" "release/"
     echo "✓ 插件包已复制到 release/ 目录"
     
     # 显示插件包内容
     echo ""
     echo "=== 插件包内容 ==="
-    unzip -l "build/distributions/bigclean-scanner-1.0.0.zip"
+    unzip -l "build/distributions/bigclean-scanner-1.0.1.zip"
     
     echo ""
     echo "=== 安装说明 ==="
     echo "1. 打开 IntelliJ IDEA"
     echo "2. 进入 File → Settings → Plugins"
     echo "3. 点击齿轮图标 → Install Plugin from Disk..."
-    echo "4. 选择 release/bigclean-scanner-1.0.0.zip"
+    echo "4. 选择 release/bigclean-scanner-1.0.1.zip"
     echo "5. 重启 IntelliJ IDEA"
     echo ""
     echo "=== 使用说明 ==="
