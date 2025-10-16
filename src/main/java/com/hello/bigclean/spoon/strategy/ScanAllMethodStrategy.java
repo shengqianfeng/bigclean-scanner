@@ -47,12 +47,33 @@ public class ScanAllMethodStrategy implements ScanStrategy {
 
     @Override
     public List<? extends Reference> scan(String path) throws InterruptedException {
-        Launcher launcher = new Launcher();
-        launcher.addInputResource(path);
-        launcher.getEnvironment().setNoClasspath(true);
-        launcher.getEnvironment().setAutoImports(true);  // 自动导入
-        CtModel ctModel = launcher.buildModel();
-        launcher.process();
+        try {
+            Launcher launcher = createSpoonLauncher();
+            launcher.addInputResource(path);
+            
+            // 配置环境以处理重复类名
+            launcher.getEnvironment().setNoClasspath(true);
+            launcher.getEnvironment().setAutoImports(false);
+            launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);  // 忽略重复声明
+            launcher.getEnvironment().setShouldCompile(false);  // 不编译，只解析
+            
+            CtModel ctModel = null;
+            try {
+                ctModel = launcher.buildModel();
+            } catch (Exception e) {
+                System.err.println("方法扫描遇到重复类名，尝试使用容错模式: " + e.getMessage());
+                // 重新创建launcher，使用更宽松的配置
+                launcher = createTolerantSpoonLauncher();
+                launcher.addInputResource(path);
+                ctModel = launcher.buildModel();
+            }
+            
+            if (ctModel == null) {
+                System.err.println("无法构建Spoon模型用于方法扫描");
+                return new ArrayList<>();
+            }
+            
+            launcher.process();
         System.out.println("----------------------");
         // 获取所有项目中的方法，排除main方法和测试方法
         Collection<CtType<?>> allTypes = ctModel.getAllTypes();
@@ -94,6 +115,16 @@ public class ScanAllMethodStrategy implements ScanStrategy {
         Collections.sort(unusedMethodsSet, (o1, o2) -> o2.getMethodLines() - o1.getMethodLines());
         System.out.println("Unused methods (" + unusedMethods.size() + "):");
         return unusedMethodsSet;
+        
+        } catch (Exception e) {
+            System.err.println("方法扫描失败: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        } catch (AssertionError e) {
+            System.err.println("方法扫描断言错误: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
     private boolean isBuilderChainMethod(CtMethod method) {
         return method.getDeclaringType().getQualifiedName().endsWith("Builder");
@@ -117,5 +148,66 @@ public class ScanAllMethodStrategy implements ScanStrategy {
 
         }
         return false;
+    }
+    
+    /**
+     * 创建容错模式的Spoon Launcher，处理重复类名问题
+     */
+    private Launcher createTolerantSpoonLauncher() {
+        try {
+            System.out.println("方法扫描使用容错模式创建Spoon Launcher");
+            
+            Launcher launcher = new Launcher();
+            
+            // 更宽松的配置
+            launcher.getEnvironment().setAutoImports(false);
+            launcher.getEnvironment().setNoClasspath(true);
+            launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
+            launcher.getEnvironment().setShouldCompile(false);
+            launcher.getEnvironment().setComplianceLevel(8);
+            
+            // 设置更多容错选项
+            launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+            launcher.getEnvironment().setPreserveLineNumbers(false);
+            
+            return launcher;
+            
+        } catch (Exception e) {
+            System.err.println("创建容错Spoon Launcher失败: " + e.getMessage());
+            throw new RuntimeException("无法初始化容错Spoon", e);
+        }
+    }
+    
+    /**
+     * 创建Spoon Launcher，避免类加载器冲突
+     */
+    private Launcher createSpoonLauncher() {
+        try {
+            // 设置系统属性以避免日志冲突
+            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "warn");
+            System.setProperty("org.slf4j.simpleLogger.showLogName", "false");
+            System.setProperty("org.slf4j.simpleLogger.showShortLogName", "false");
+            System.setProperty("org.slf4j.simpleLogger.showDateTime", "false");
+            
+            // 设置Spoon环境属性以避免断言错误
+            System.setProperty("spoon.ignoreErrors", "true");
+            System.setProperty("spoon.ignoreMissingTypes", "true");
+            System.setProperty("spoon.ignoreSyntaxErrors", "true");
+            
+            Launcher launcher = new Launcher();
+            
+            // 配置环境 - 添加重复类名处理
+            launcher.getEnvironment().setAutoImports(false);
+            launcher.getEnvironment().setNoClasspath(true);
+            launcher.getEnvironment().setComplianceLevel(8);
+            launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);  // 忽略重复声明
+            launcher.getEnvironment().setShouldCompile(false);  // 不编译，只解析
+            
+            return launcher;
+            
+        } catch (Exception e) {
+            System.err.println("创建Spoon Launcher失败: " + e.getMessage());
+            throw new RuntimeException("无法初始化Spoon", e);
+        }
     }
 }

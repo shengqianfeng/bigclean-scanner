@@ -35,8 +35,21 @@ public class ClassPathAnalyzerFactory implements ToolWindowFactory {
     private JTree unusedMethodTree;
     private Project currentProject;
     
+    // 静态初始化块 - 插件加载时就会执行
+    static {
+        System.out.println("=== ClassPathAnalyzerFactory 类被加载 ===");
+    }
+    
+    // 构造函数 - 创建实例时执行
+    public ClassPathAnalyzerFactory() {
+        System.out.println("=== ClassPathAnalyzerFactory 构造函数被调用 ===");
+    }
+    
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+        System.out.println("=== ClassPathAnalyzerFactory.createToolWindowContent() 被调用 ===");
+        System.out.println("项目名称: " + project.getName());
+        System.out.println("项目路径: " + project.getBasePath());
         this.currentProject = project;
         
         JPanel mainPanel = new JPanel(new BorderLayout());

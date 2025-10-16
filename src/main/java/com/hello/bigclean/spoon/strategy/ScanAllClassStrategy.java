@@ -44,10 +44,22 @@ public class ScanAllClassStrategy implements ScanStrategy {
             // 添加输入资源
             launcher.addInputResource(path);
             
-            // 构建模型 - 添加错误处理
+            // 构建模型 - 添加错误处理和重复类名处理
             launcher.getEnvironment().setAutoImports(false);
             launcher.getEnvironment().setNoClasspath(true);
-            CtModel ctModel = launcher.buildModel();
+            launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);  // 忽略重复声明
+            launcher.getEnvironment().setShouldCompile(false);  // 不编译，只解析
+            
+            CtModel ctModel = null;
+            try {
+                ctModel = launcher.buildModel();
+            } catch (Exception e) {
+                System.err.println("Spoon构建模型时遇到重复类名，尝试使用容错模式: " + e.getMessage());
+                // 重新创建launcher，使用更宽松的配置
+                launcher = createTolerantSpoonLauncher();
+                launcher.addInputResource(path);
+                ctModel = launcher.buildModel();
+            }
 
             
             if (ctModel == null) {
@@ -197,6 +209,34 @@ public class ScanAllClassStrategy implements ScanStrategy {
     }
     
     /**
+     * 创建容错模式的Spoon Launcher，处理重复类名问题
+     */
+    private Launcher createTolerantSpoonLauncher() {
+        try {
+            System.out.println("使用容错模式创建Spoon Launcher");
+            
+            Launcher launcher = new Launcher();
+            
+            // 更宽松的配置
+            launcher.getEnvironment().setAutoImports(false);
+            launcher.getEnvironment().setNoClasspath(true);
+            launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);
+            launcher.getEnvironment().setShouldCompile(false);
+            launcher.getEnvironment().setComplianceLevel(8);
+            
+            // 设置更多容错选项
+            launcher.getEnvironment().setIgnoreSyntaxErrors(true);
+            launcher.getEnvironment().setPreserveLineNumbers(false);
+            
+            return launcher;
+            
+        } catch (Exception e) {
+            System.err.println("创建容错Spoon Launcher失败: " + e.getMessage());
+            throw new RuntimeException("无法初始化容错Spoon", e);
+        }
+    }
+    
+    /**
      * 创建Spoon Launcher，避免类加载器冲突
      */
     private Launcher createSpoonLauncher() {
@@ -217,10 +257,12 @@ public class ScanAllClassStrategy implements ScanStrategy {
             
             Launcher launcher = new Launcher();
             
-            // 配置环境
-            launcher.getEnvironment().setAutoImports(true);
-            launcher.getEnvironment().setNoClasspath(false);
+            // 配置环境 - 添加重复类名处理
+            launcher.getEnvironment().setAutoImports(false);
+            launcher.getEnvironment().setNoClasspath(true);
             launcher.getEnvironment().setComplianceLevel(8);
+            launcher.getEnvironment().setIgnoreDuplicateDeclarations(true);  // 忽略重复声明
+            launcher.getEnvironment().setShouldCompile(false);  // 不编译，只解析
             
             return launcher;
             
