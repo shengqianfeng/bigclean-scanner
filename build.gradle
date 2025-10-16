@@ -86,15 +86,21 @@ patchPluginXml {
     sinceBuild = '201'  // 对应2020.1，支持你的IDEA版本
     // untilBuild 不设置，支持所有未来版本
     changeNotes """
-      <h3>版本 1.0.1 发布</h3>
+      <h3>版本 1.0.1 - 重要修复更新</h3>
       <ul>
-        <li>🎉 首次发布 BigClean Scanner 插件</li>
+        <li>🐛 <strong>修复重复类名问题</strong> - 解决了多模块项目中相同类名导致Spoon分析器报错的问题</li>
+        <li>🔧 <strong>改进容错处理</strong> - 添加了容错模式，提高了复杂项目的分析成功率</li>
+        <li>⚡ <strong>优化分析稳定性</strong> - 增强了类扫描和方法扫描的错误处理机制</li>
+        <li>📈 <strong>提升兼容性</strong> - 更好地支持大型多模块项目的代码分析</li>
+      </ul>
+      
+      <h4>版本 1.0.0 功能特性：</h4>
+      <ul>
         <li>🔍 支持无用类分析（正则表达式 + Spoon AST）</li>
         <li>🔍 支持无用方法分析</li>
         <li>🔄 独立刷新功能，每个分析模块可单独刷新</li>
         <li>☕ 支持 Spring 框架相关注解分析</li>
         <li>📦 支持 AspectJ、MapStruct、Lombok 等框架</li>
-        <li>⚡ 优化的性能和用户体验</li>
       </ul>
       
       <h4>使用方法：</h4>
