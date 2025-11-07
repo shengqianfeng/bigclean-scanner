@@ -12,6 +12,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MethodModelHandler {
+    
+    /**
+     * 获取无用方法列表
+     */
+    public static List<MethodReference> getUnusedMethods(@NotNull Project project) {
+        String projectPath = project.getBasePath();
+        if (projectPath == null) {
+            return new ArrayList<>();
+        }
+
+        try {
+            ScanStrategy scanStrategy = StrategyFactory.obtainScanner("SCAN_ALL_METHOD");
+            Object scanResult = scanStrategy.scan(projectPath);
+
+            List<MethodReference> result = new ArrayList<>();
+            // 安全的类型转换
+            if (scanResult instanceof List<?>) {
+                List<?> list = (List<?>) scanResult;
+                for (Object item : list) {
+                    if (item instanceof MethodReference) {
+                        result.add((MethodReference) item);
+                    }
+                }
+            }
+            return result;
+
+        } catch (Exception e) {
+            System.err.println("获取无用方法失败: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+    
     /**
      * 构建无用方法的树形结构模型
      * 你可以在这里调用你的无用方法分析代码

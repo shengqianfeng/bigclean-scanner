@@ -28,12 +28,19 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import com.hello.bigclean.spoon.reference.MethodReference;
 
 public class ClassPathAnalyzerFactory implements ToolWindowFactory {
     private JTree unusedClassTreeRegex;
     private JTree unusedClassTreeSpoon;
     private JTree unusedMethodTree;
     private Project currentProject;
+    
+    // 方法过滤相关组件
+    private JTextField excludeKeywordsField;
+    private List<MethodReference> allUnusedMethods = new ArrayList<>();
     
     // 静态初始化块 - 插件加载时就会执行
     static {
@@ -118,7 +125,7 @@ public class ClassPathAnalyzerFactory implements ToolWindowFactory {
      * 创建无用方法的标签页
      */
     private JPanel createUnusedMethodTabbedPane() {
-        return createTabPanelWithRefreshButton(
+        return createMethodTabPanelWithFilter(
             unusedMethodTree, 
             "分析项目中未被使用的方法",
             "无用方法分析",
@@ -190,6 +197,195 @@ public class ClassPathAnalyzerFactory implements ToolWindowFactory {
         panel.add(scrollPane, BorderLayout.CENTER);
         
         return panel;
+    }
+    
+    /**
+     * 创建带有过滤功能的方法标签页面板
+     */
+    private JPanel createMethodTabPanelWithFilter(JTree tree, String description, String tabName, Runnable refreshAction) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(UIUtil.getPanelBackground());
+        
+        // 顶部：描述和控制按钮
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 0, JBColor.border()),
+            BorderFactory.createEmptyBorder(12, 16, 12, 16)
+        ));
+        topPanel.setBackground(UIUtil.getPanelBackground());
+        
+        // 左侧面板：描述和耗时
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.setOpaque(false);
+        
+        // 描述标签
+        JLabel descLabel = new JLabel(description);
+        descLabel.setForeground(JBColor.foreground());
+        descLabel.setFont(UIUtil.getLabelFont());
+        
+        // 耗时显示标签
+        JLabel timingLabel = new JLabel("上次执行耗时: -");
+        timingLabel.setForeground(JBColor.GRAY);
+        timingLabel.setFont(UIUtil.getLabelFont().deriveFont(UIUtil.getLabelFont().getSize() - 1f));
+        
+        leftPanel.add(descLabel, BorderLayout.NORTH);
+        leftPanel.add(timingLabel, BorderLayout.SOUTH);
+        
+        // 右侧面板：控制按钮
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        rightPanel.setOpaque(false);
+        
+        // 刷新按钮
+        JButton refreshButton = createStyledButton("Refresh", 120, 32);
+        refreshButton.addActionListener(e -> {
+            refreshButton.setEnabled(false);
+            refreshButton.setText("Analyzing...");
+            timingLabel.setText("Executing...");
+            
+            long startTime = System.currentTimeMillis();
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    refreshAction.run();
+                } finally {
+                    long endTime = System.currentTimeMillis();
+                    long duration = endTime - startTime;
+                    
+                    refreshButton.setEnabled(true);
+                    refreshButton.setText("Refresh");
+                    timingLabel.setText("上次执行耗时: " + formatDuration(duration));
+                }
+            });
+        });
+        
+        rightPanel.add(refreshButton);
+        
+        topPanel.add(leftPanel, BorderLayout.WEST);
+        topPanel.add(rightPanel, BorderLayout.EAST);
+        
+        // 中间：过滤面板
+        JPanel filterPanel = createFilterPanel(tree);
+        
+        // 底部：树组件
+        JScrollPane scrollPane = new JScrollPane(tree);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.setBackground(UIUtil.getPanelBackground());
+        
+        panel.add(topPanel, BorderLayout.NORTH);
+        panel.add(filterPanel, BorderLayout.CENTER);
+        panel.add(scrollPane, BorderLayout.SOUTH);
+        
+        return panel;
+    }
+    
+    /**
+     * 创建过滤面板
+     */
+    private JPanel createFilterPanel(JTree tree) {
+        JPanel filterPanel = new JPanel(new BorderLayout());
+        filterPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 0, JBColor.border()),
+            BorderFactory.createEmptyBorder(8, 16, 8, 16)
+        ));
+        filterPanel.setBackground(UIUtil.getPanelBackground());
+        
+        // 左侧：标签和输入框
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        leftPanel.setOpaque(false);
+        
+        JLabel filterLabel = new JLabel("排除含关键词方法:");
+        filterLabel.setForeground(JBColor.foreground());
+        filterLabel.setFont(UIUtil.getLabelFont());
+        
+        excludeKeywordsField = new JTextField(20);
+        excludeKeywordsField.setToolTipText("输入要排除的方法关键词，用逗号分隔，如: get,set,init");
+        excludeKeywordsField.setFont(UIUtil.getLabelFont());
+        
+        leftPanel.add(filterLabel);
+        leftPanel.add(excludeKeywordsField);
+        
+        // 右侧：排除按钮
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        rightPanel.setOpaque(false);
+        
+        JButton excludeButton = createStyledButton("Apply Filter", 100, 28);
+        excludeButton.addActionListener(e -> applyMethodFilter(tree));
+        
+        JButton clearButton = createStyledButton("Clear", 60, 28);
+        clearButton.addActionListener(e -> {
+            excludeKeywordsField.setText("");
+            applyMethodFilter(tree);
+        });
+        
+        rightPanel.add(clearButton);
+        rightPanel.add(excludeButton);
+        
+        filterPanel.add(leftPanel, BorderLayout.WEST);
+        filterPanel.add(rightPanel, BorderLayout.EAST);
+        
+        return filterPanel;
+    }
+    
+    /**
+     * 应用方法过滤
+     */
+    private void applyMethodFilter(JTree tree) {
+        String keywords = excludeKeywordsField.getText().trim();
+        List<MethodReference> filteredMethods = filterMethods(allUnusedMethods, keywords);
+        
+        // 重新构建树模型
+        DefaultTreeModel filteredModel = MethodModelHandler.buildTreeModelFromUnusedMethods(filteredMethods);
+        tree.setModel(filteredModel);
+        
+        // 展开根节点
+        tree.expandRow(0);
+        
+        System.out.println("=== 方法过滤完成 ===");
+        System.out.println("原始方法数量: " + allUnusedMethods.size());
+        System.out.println("过滤后方法数量: " + filteredMethods.size());
+        System.out.println("排除关键词: " + keywords);
+    }
+    
+    /**
+     * 过滤方法列表
+     */
+    private List<MethodReference> filterMethods(List<MethodReference> methods, String keywords) {
+        if (keywords == null || keywords.isEmpty()) {
+            return new ArrayList<>(methods);
+        }
+        
+        // 解析关键词
+        String[] keywordArray = keywords.split(",");
+        List<String> keywordList = new ArrayList<>();
+        for (String keyword : keywordArray) {
+            String trimmed = keyword.trim();
+            if (!trimmed.isEmpty()) {
+                keywordList.add("#" + trimmed.toLowerCase());
+            }
+        }
+        
+        if (keywordList.isEmpty()) {
+            return new ArrayList<>(methods);
+        }
+        
+        // 过滤方法
+        List<MethodReference> filteredMethods = new ArrayList<>();
+        for (MethodReference method : methods) {
+            String methodString = method.toString().toLowerCase();
+            boolean shouldExclude = false;
+            
+            for (String keyword : keywordList) {
+                if (methodString.contains(keyword)) {
+                    shouldExclude = true;
+                    break;
+                }
+            }
+            
+            if (!shouldExclude) {
+                filteredMethods.add(method);
+            }
+        }
+        
+        return filteredMethods;
     }
     
     /**
@@ -379,12 +575,28 @@ public class ClassPathAnalyzerFactory implements ToolWindowFactory {
      * 刷新方法分析
      */
     private void refreshMethodAnalysis() {
-        if (currentProject == null) return;
+        System.out.println("=== 开始方法分析 ===");
+        if (currentProject == null) {
+            System.out.println("ERROR: currentProject 为 null");
+            return;
+        }
+        
+        System.out.println("项目路径: " + currentProject.getBasePath());
+        System.out.println("项目名称: " + currentProject.getName());
         
         try {
-            DefaultTreeModel unusedMethodTreeModel = MethodModelHandler.buildUnusedMethodTree(currentProject);
-            unusedMethodTree.setModel(unusedMethodTreeModel);
+            System.out.println("调用 MethodModelHandler.getUnusedMethods()");
+            // 获取所有无用方法
+            allUnusedMethods = MethodModelHandler.getUnusedMethods(currentProject);
+            System.out.println("获取到无用方法数量: " + allUnusedMethods.size());
+            
+            // 应用当前的过滤设置
+            applyMethodFilter(unusedMethodTree);
+            
+            System.out.println("=== 方法分析成功完成 ===");
         } catch (Exception e) {
+            System.out.println("ERROR: 方法分析失败");
+            e.printStackTrace();
             showError("方法分析失败: " + e.getMessage());
         }
     }
