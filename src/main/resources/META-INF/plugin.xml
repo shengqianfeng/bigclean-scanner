@@ -2,7 +2,7 @@
     <id>com.hello.bigclean.scanner</id>
     <name>BigClean Scanner</name>
     <vendor>Hello Sheng</vendor>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     
     <!-- EULA License Declaration -->
     <license url="https://www.termsfeed.com/live/cd3b772c-7c3e-4a3e-a578-1d927c4f5fc9">End User License Agreement</license>

@@ -15,7 +15,7 @@ plugins {
 apply plugin: 'org.jetbrains.intellij'
 
 group 'com.hello.bigclean'
-version '1.0.1'
+version '1.0.2'
 
 repositories {
     mavenCentral()
@@ -86,15 +86,24 @@ patchPluginXml {
     sinceBuild = '201'  // 对应2020.1，支持你的IDEA版本
     // untilBuild 不设置，支持所有未来版本
     changeNotes """
-      <h3>版本 1.0.1 - 重要修复更新</h3>
+      <h3>版本 1.0.2 - 调试与稳定性增强</h3>
       <ul>
-        <li>🐛 <strong>修复重复类名问题</strong> - 解决了多模块项目中相同类名导致Spoon分析器报错的问题</li>
-        <li>🔧 <strong>改进容错处理</strong> - 添加了容错模式，提高了复杂项目的分析成功率</li>
-        <li>⚡ <strong>优化分析稳定性</strong> - 增强了类扫描和方法扫描的错误处理机制</li>
-        <li>📈 <strong>提升兼容性</strong> - 更好地支持大型多模块项目的代码分析</li>
+        <li>🔧 <strong>增强调试支持</strong> - 添加了详细的调试日志输出，便于问题排查和功能验证</li>
+        <li>📊 <strong>改进错误处理</strong> - 优化了异常处理机制，提供更清晰的错误信息和堆栈跟踪</li>
+        <li>⚡ <strong>提升分析稳定性</strong> - 改进了分析流程的容错能力，减少分析过程中的意外中断</li>
+        <li>🛠️ <strong>开发者体验优化</strong> - 为开发者提供了更好的调试工具和日志系统</li>
+        <li>🔍 <strong>分析过程可视化</strong> - 增加了分析过程的详细输出，让用户了解分析进度</li>
       </ul>
       
-      <h4>版本 1.0.0 功能特性：</h4>
+      <h4>版本 1.0.2 重要修复：</h4>
+      <ul>
+        <li>🐛 修复重复类名问题 - 解决了多模块项目中相同类名导致Spoon分析器报错的问题</li>
+        <li>🔧 改进容错处理 - 添加了容错模式，提高了复杂项目的分析成功率</li>
+        <li>⚡ 优化分析稳定性 - 增强了类扫描和方法扫描的错误处理机制</li>
+        <li>📈 提升兼容性 - 更好地支持大型多模块项目的代码分析</li>
+      </ul>
+      
+      <h4>核心功能特性：</h4>
       <ul>
         <li>🔍 支持无用类分析（正则表达式 + Spoon AST）</li>
         <li>🔍 支持无用方法分析</li>
