@@ -142,9 +142,7 @@ public class MethodScanHelper {
     public static boolean nonBizCLass(CtTypeReference<?> ctTypeReference) {
         String qualifiedName = ctTypeReference.getQualifiedName();
         return StringUtils.isNotEmpty(qualifiedName)
-                && !qualifiedName.startsWith("cn.")
-                && !qualifiedName.startsWith("com.hello")
-                && !qualifiedName.startsWith("com.jeff.");
+                && !qualifiedName.startsWith("cn.") && !qualifiedName.startsWith("com.");
 
     }
 
